@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Circular Text Editor</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .controls { position: fixed; top: 10px; left: 10px; }
+        .control { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <div class="control">
+            <label for="text-input">Text Input:</label>
+            <textarea id="text-input" rows="4" cols="30"></textarea>
+        </div>
+        <div class="control">
+            <label for="font-size">Font Size:</label>
+            <input type="range" id="font-size" min="10" max="100" value="20">
+        </div>
+        <div class="control">
+            <label for="circle-size">Circle Size:</label>
+            <input type="range" id="circle-size" min="100" max="500" value="200">
+        </div>
+        <div class="control">
+            <label for="speed">Speed:</label>
+            <input type="range" id="speed" min="1" max="10" value="2">
+        </div>
+        <div class="control">
+            <label for="kerning">Kerning:</label>
+            <input type="range" id="kerning" min="5" max="20" value="10">
+        </div>
+        <div class="control">
+            <label for="font-color">Font Color:</label>
+            <input type="color" id="font-color" value="#000000">
+        </div>
+        <div class="control">
+            <label for="band-color">Band Color:</label>
+            <input type="color" id="band-color" value="#FFFFFF">
+        </div>
+        <div class="control">
+            <label for="background-color">Background Color:</label>
+            <input type="color" id="background-color" value="#FFFFFF">
+        </div>
+        <div class="control">
+            <label for="font">Font:</label>
+            <select id="font">
+                <option value="Arial">Arial</option>
+                <option value="Courier New">Courier New</option>
+                <option value="Georgia">Georgia</option>
+                <option value="Times New Roman">Times New Roman</option>
+                <option value="Verdana">Verdana</option>
+            </select>
+        </div>
+        <div class="control">
+            <label for="angle">Angle:</label>
+            <input type="range" id="angle" min="-90" max="90" value="0">
+        </div>
+        <div class="control">
+            <label for="transparency">Transparency:</label>
+            <input type="range" id="transparency" min="0" max="255" value="255">
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="sketch.js"></script>
+</body>
+</html>
