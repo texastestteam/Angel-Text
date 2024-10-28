@@ -5,69 +5,60 @@
     <title>Circular Text Display</title>
     <style>
         body { font-family: Arial, sans-serif; }
-        .controls { position: fixed; top: 10px; left: 10px; }
-        .control, .ring-input { margin-bottom: 10px; }
+        .controls-container { position: fixed; top: 10px; left: 10px; }
+        .control, .ring-control { margin-bottom: 10px; }
+        .ring-toggle { cursor: pointer; margin-bottom: 5px; }
+        .toggle-content { display: none; }
     </style>
 </head>
 <body>
-    <div class="controls" id="controls-container">
-        <!-- Container for text inputs to ensure they are all stacked together -->
-        <div id="text-input-container">
-            <div class="ring-input">
+    <div class="controls-container" id="controls-container">
+        <!-- Initial Ring Control Panel -->
+        <div class="ring-control" id="ring-0-controls">
+            <div class="ring-toggle" onclick="toggleRingControls(0)">
+                Ring One +
+            </div>
+            <div class="toggle-content" id="ring-0-content">
                 <label for="text-input-0">Text Input for Ring 1:</label>
-                <textarea id="text-input-0" rows="2" cols="30"></textarea>
+                <textarea id="text-input-0" rows="2" cols="30" onchange="updateRingText(0)">hi, hola, bonjour, hallo, ciao, こんにちは, 안녕하세요, 你好, привет, olá, hei, hej, สวัสดี, merhaba, sveiki, salam, xin chào, aloha, habari, sawubona</textarea><br>
+
+                <label for="font-size-0">Font Size:</label>
+                <input type="range" id="font-size-0" min="10" max="100" value="20" onchange="updateRingSettings(0)"><br>
+
+                <label for="circle-size-0">Base Circle Size:</label>
+                <input type="range" id="circle-size-0" min="100" max="500" value="200" onchange="updateRingSettings(0)"><br>
+
+                <label for="speed-0">Speed:</label>
+                <input type="range" id="speed-0" min="1" max="10" value="2" onchange="updateRingSettings(0)"><br>
+
+                <label for="kerning-0">Kerning:</label>
+                <input type="range" id="kerning-0" min="5" max="20" value="10" onchange="updateRingSettings(0)"><br>
+
+                <label for="font-color-0">Font Color:</label>
+                <input type="color" id="font-color-0" value="#000000" onchange="updateRingSettings(0)"><br>
+
+                <label for="band-color-0">Band Color:</label>
+                <input type="color" id="band-color-0" value="#FFFFFF" onchange="updateRingSettings(0)"><br>
             </div>
         </div>
-        <button id="add-ring-button">Add Ring</button>
-        <button id="toggle-layout-button">Toggle Layout</button>
 
-        <!-- Other controls -->
-        <div class="control">
-            <label for="font-size">Font Size:</label>
-            <input type="range" id="font-size" min="10" max="100" value="20">
-        </div>
-        <div class="control">
-            <label for="circle-size">Base Circle Size:</label>
-            <input type="range" id="circle-size" min="100" max="500" value="200">
-        </div>
-        <div class="control">
-            <label for="speed">Speed:</label>
-            <input type="range" id="speed" min="1" max="10" value="2">
-        </div>
-        <div class="control">
-            <label for="kerning">Kerning:</label>
-            <input type="range" id="kerning" min="5" max="20" value="10">
-        </div>
-        <div class="control">
-            <label for="font-color">Font Color:</label>
-            <input type="color" id="font-color" value="#000000">
-        </div>
-        <div class="control">
-            <label for="band-color">Band Color:</label>
-            <input type="color" id="band-color" value="#FFFFFF">
-        </div>
-        <div class="control">
-            <label for="background-color">Background Color:</label>
-            <input type="color" id="background-color" value="#FFFFFF">
-        </div>
-        <div class="control">
-            <label for="font">Font:</label>
-            <select id="font">
-                <option value="Arial">Arial</option>
-                <option value="Courier New">Courier New</option>
-                <option value="Georgia">Georgia</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Verdana">Verdana</option>
-            </select>
-        </div>
-        <div class="control">
-            <label for="angle">Angle:</label>
-            <input type="range" id="angle" min="-90" max="90" value="0">
-        </div>
-        <div class="control">
-            <label for="transparency">Transparency:</label>
-            <input type="range" id="transparency" min="0" max="255" value="255">
-        </div>
+        <button id="add-ring-button" onclick="addNewRing()">Add New Ring</button>
+        <br><br>
+
+        <!-- Ring Spacing Control -->
+        <label for="ring-spacing">Ring Spacing:</label>
+        <input type="range" id="ring-spacing" min="10" max="100" value="30" onchange="updateRingSpacing()">
+        <br><br>
+
+        <!-- Background Color Control -->
+        <label for="background-color">Background Color:</label>
+        <input type="color" id="background-color" value="#000000" onchange="updateBackgroundColor()">
+        <br>
+    </div>
+
+    <!-- Experimental Layout Toggle Button -->
+    <div style="position: fixed; bottom: 10px; left: 10px;">
+        <button id="toggle-layout-button" onclick="toggleLayout()">Standard Layout</button>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
