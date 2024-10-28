@@ -2,25 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Circular Text Editor</title>
+    <title>Circular Text Display</title>
     <style>
         body { font-family: Arial, sans-serif; }
         .controls { position: fixed; top: 10px; left: 10px; }
-        .control { margin-bottom: 10px; }
+        .control, .ring-input { margin-bottom: 10px; }
     </style>
 </head>
 <body>
-    <div class="controls">
-        <div class="control">
-            <label for="text-input">Text Input:</label>
-            <textarea id="text-input" rows="4" cols="30"></textarea>
+    <div class="controls" id="controls-container">
+        <!-- Container for text inputs to ensure they are all stacked together -->
+        <div id="text-input-container">
+            <div class="ring-input">
+                <label for="text-input-0">Text Input for Ring 1:</label>
+                <textarea id="text-input-0" rows="2" cols="30"></textarea>
+            </div>
         </div>
+        <button id="add-ring-button">Add Ring</button>
+        <button id="toggle-layout-button">Toggle Layout</button>
+
+        <!-- Other controls -->
         <div class="control">
             <label for="font-size">Font Size:</label>
             <input type="range" id="font-size" min="10" max="100" value="20">
         </div>
         <div class="control">
-            <label for="circle-size">Circle Size:</label>
+            <label for="circle-size">Base Circle Size:</label>
             <input type="range" id="circle-size" min="100" max="500" value="200">
         </div>
         <div class="control">
@@ -62,6 +69,7 @@
             <input type="range" id="transparency" min="0" max="255" value="255">
         </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="sketch.js"></script>
 </body>
