@@ -1,14 +1,16 @@
 let fontSize, circleSize, speed, kerning;
 let fontColor, bandColor, backgroundColor;
-let font, angleSlider, transparencySlider;
+let selectedFont;
 let angle = 0;
 
 let fonts = {};
-let selectedFont;
-let textInputs = []; // Array to store text inputs
-let baseCircleSize = 200; // Base size for the first ring
-let ringSpacing = 30; // Spacing between rings for concentric layout
-let layoutMode = 'concentric'; // Track layout mode
+let ringSettings = [];
+let ringSpacing = 30;  // Default ring spacing
+
+const greetings = [
+    "hi", "hola", "bonjour", "hallo", "ciao", "こんにちは", "안녕하세요", "你好", "привет", "olá",
+    "hei", "hej", "สวัสดี", "merhaba", "sveiki", "salam", "xin chào", "aloha", "habari", "sawubona"
+];
 
 function preload() {
     fonts['Arial'] = loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Regular.otf');
@@ -20,110 +22,166 @@ function preload() {
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
-    
-    // Initialize controls
-    fontSize = select('#font-size');
-    circleSize = select('#circle-size');
-    speed = select('#speed');
-    kerning = select('#kerning');
-    fontColor = select('#font-color');
-    bandColor = select('#band-color');
-    backgroundColor = select('#background-color');
-    font = select('#font');
-    angleSlider = select('#angle');
-    transparencySlider = select('#transparency');
 
-    // Add initial text input
-    textInputs.push(select('#text-input-0'));
-    select('#add-ring-button').mousePressed(addNewRing);
-    select('#toggle-layout-button').mousePressed(toggleLayout);
+    // Select a random font if fonts loaded successfully
+    selectedFont = random(Object.values(fonts));
 
-    selectedFont = fonts['Arial']; // Default font
-}
+    // Initialize the first ring with random settings and text
+    ringSettings[0] = {
+        text: random(greetings),
+        fontSize: 20,
+        circleSize: 200,
+        speed: 2,
+        kerning: 10,
+        fontColor: color(random(255), random(255), random(255)),
+        bandColor: color(random(255), random(255), random(255))
+    };
 
-function addNewRing() {
-    const textInputContainer = select('#text-input-container'); // Container for all text inputs
-    const newRingIndex = textInputs.length;
-    
-    // Label for new ring
-    createElement('label', `Text Input for Ring ${newRingIndex + 1}:`).parent(textInputContainer);
-    
-    // Create new text area under the previous one
-    const newTextArea = createElement('textarea');
-    newTextArea.attribute('rows', 2);
-    newTextArea.attribute('cols', 30);
-    newTextArea.id(`text-input-${newRingIndex}`);
-    newTextArea.parent(textInputContainer);
+    // Sync initial values with the HTML controls
+    document.getElementById("text-input-0").value = ringSettings[0].text;
+    document.getElementById("ring-spacing").value = ringSpacing;
 
-    textInputs.push(newTextArea); // Add to text input array
-}
-
-function toggleLayout() {
-    layoutMode = layoutMode === 'concentric' ? 'stacked' : 'concentric';
+    // Set a random background color
+    backgroundColor = color(random(255), random(255), random(255));
+    document.getElementById("background-color").value = backgroundColor.toString('#rrggbb');
 }
 
 function draw() {
-    background(backgroundColor.value());
+    background(backgroundColor);
+    textFont(selectedFont);
 
-    let txtSize = fontSize.value();
-    let angleTilt = angleSlider.value();
-    let transparency = transparencySlider.value();
-
-    selectedFont = fonts[font.value()] || selectedFont;
-
-    // Draw each ring based on layout mode
-    for (let i = 0; i < textInputs.length; i++) {
-        let txt = textInputs[i].value();
-        let circSize = baseCircleSize + (layoutMode === 'concentric' ? i * ringSpacing : 0); // Adjust size per ring for concentric
-        let verticalOffset = layoutMode === 'stacked' ? i * (txtSize + ringSpacing) : 0; // Stack rings vertically if in "stacked" mode
-
-        // Draw the rotating band and text as a whole
+    // Draw each ring with spacing applied
+    ringSettings.forEach((ring, index) => {
         push();
-        translate(0, verticalOffset, 0); // Adjust vertical position for stacked layout
-        rotateX(radians(angleTilt));
+        translate(0, index * ringSpacing - (ringSettings.length * ringSpacing) / 2, 0);  // Adjust for spacing
+        drawRing(ring);
+        pop();
+    });
+}
 
-        // Draw the band as a series of rectangles
-        let bandAlpha = color(bandColor.value());
-        bandAlpha.setAlpha(transparency);
-        fill(bandAlpha);
-        noStroke();
+function drawRing(ring) {
+    let txt = ring.text;
+    let circSize = ring.circleSize;
+    let txtSize = ring.fontSize;
 
-        let bandHeight = txtSize + 10;
-        for (let j = 0; j < 360; j += 1) {
-            let angle = radians(j);
-            let x = circSize * cos(angle);
-            let z = circSize * sin(angle);
-            push();
-            translate(x, 0, z);
-            rotateY(-angle);
-            rotateY(HALF_PI); // Rotate the rectangles on the Y-axis to connect seamlessly
-            rectMode(CENTER);
-            rect(0, 0, circSize * TWO_PI / 360, bandHeight);
-            pop();
-        }
+    fill(ring.bandColor);
+    noStroke();
 
-        // Draw the text on the circular path
-        fill(fontColor.value());
-        textSize(txtSize);
-        textFont(selectedFont);
-        textAlign(CENTER, CENTER);
-
-        let textW = textWidth(txt);
-        let arcLength = TWO_PI * circSize;
-        let xStart = (frameCount * speed.value()) % (textW + arcLength);
-
-        for (let k = txt.length - 1; k >= 0; k--) {
-            let theta = (xStart + (txt.length - 1 - k) * kerning.value()) / circSize;
-            let x = circSize * cos(theta);
-            let z = circSize * sin(theta);
-
-            push();
-            translate(x, 0, z);
-            rotateY(-theta + HALF_PI); // Rotate each letter to match the flow of the band
-            text(txt.charAt(k), 0, 0);
-            pop();
-        }
-
+    // Draw the circular band as rectangles
+    let bandHeight = txtSize + 10;
+    for (let j = 0; j < 360; j += 1) {
+        let angle = radians(j);
+        let x = circSize * cos(angle);
+        let z = circSize * sin(angle);
+        push();
+        translate(x, 0, z);
+        rotateY(-angle);
+        rotateY(HALF_PI);
+        rectMode(CENTER);
+        rect(0, 0, circSize * TWO_PI / 360, bandHeight);
         pop();
     }
+
+    fill(ring.fontColor);
+    textSize(txtSize);
+    textAlign(CENTER, CENTER);
+
+    // Calculate the starting position for the text
+    let textW = textWidth(txt);
+    let arcLength = TWO_PI * circSize;
+    let xStart = (frameCount * ring.speed) % (textW + arcLength);
+
+    // Draw the text characters along the circular path
+    for (let k = txt.length - 1; k >= 0; k--) {
+        let theta = (xStart + (txt.length - 1 - k) * ring.kerning) / circSize;
+        let x = circSize * cos(theta);
+        let z = circSize * sin(theta);
+
+        push();
+        translate(x, 0, z);
+        rotateY(-theta + HALF_PI);
+        text(txt.charAt(k), 0, 0);
+        pop();
+    }
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+}
+
+function updateRingText(index) {
+    const text = document.getElementById(`text-input-${index}`).value;
+    ringSettings[index].text = text;
+}
+
+function updateRingSettings(index) {
+    ringSettings[index].fontSize = parseInt(document.getElementById(`font-size-${index}`).value);
+    ringSettings[index].circleSize = parseInt(document.getElementById(`circle-size-${index}`).value);
+    ringSettings[index].speed = parseFloat(document.getElementById(`speed-${index}`).value);
+    ringSettings[index].kerning = parseFloat(document.getElementById(`kerning-${index}`).value);
+    ringSettings[index].fontColor = color(document.getElementById(`font-color-${index}`).value);
+    ringSettings[index].bandColor = color(document.getElementById(`band-color-${index}`).value);
+}
+
+function updateRingSpacing() {
+    ringSpacing = parseInt(document.getElementById("ring-spacing").value);
+}
+
+function updateBackgroundColor() {
+    backgroundColor = color(document.getElementById("background-color").value);
+}
+
+function toggleRingControls(index) {
+    const content = document.getElementById(`ring-${index}-content`);
+    content.style.display = content.style.display === "none" ? "block" : "none";
+}
+
+function addNewRing() {
+    const newRingIndex = ringSettings.length;
+
+    ringSettings.push({
+        text: random(greetings),
+        fontSize: 20,
+        circleSize: 200,
+        speed: 2,
+        kerning: 10,
+        fontColor: color(random(255), random(255), random(255)),
+        bandColor: color(random(255), random(255), random(255))
+    });
+
+    const controlsContainer = document.getElementById('controls-container');
+    const newRingControl = document.createElement('div');
+    newRingControl.classList.add('ring-control');
+    newRingControl.id = `ring-${newRingIndex}-controls`;
+
+    newRingControl.innerHTML = `
+        <div class="ring-toggle" onclick="toggleRingControls(${newRingIndex})">
+            Ring ${newRingIndex + 1} +
+        </div>
+        <div class="toggle-content" id="ring-${newRingIndex}-content" style="display: none;">
+            <label for="text-input-${newRingIndex}">Text Input for Ring ${newRingIndex + 1}:</label>
+            <textarea id="text-input-${newRingIndex}" rows="2" cols="30" onchange="updateRingText(${newRingIndex})"></textarea><br>
+
+            <label for="font-size-${newRingIndex}">Font Size:</label>
+            <input type="range" id="font-size-${newRingIndex}" min="10" max="100" value="20" onchange="updateRingSettings(${newRingIndex})"><br>
+
+            <label for="circle-size-${newRingIndex}">Base Circle Size:</label>
+            <input type="range" id="circle-size-${newRingIndex}" min="100" max="500" value="200" onchange="updateRingSettings(${newRingIndex})"><br>
+
+            <label for="speed-${newRingIndex}">Speed:</label>
+            <input type="range" id="speed-${newRingIndex}" min="1" max="10" value="2" onchange="updateRingSettings(${newRingIndex})"><br>
+
+            <label for="kerning-${newRingIndex}">Kerning:</label>
+            <input type="range" id="kerning-${newRingIndex}" min="5" max="20" value="10" onchange="updateRingSettings(${newRingIndex})"><br>
+
+            <label for="font-color-${newRingIndex}">Font Color:</label>
+            <input type="color" id="font-color-${newRingIndex}" value="#000000" onchange="updateRingSettings(${newRingIndex})"><br>
+
+            <label for="band-color-${newRingIndex}">Band Color:</label>
+            <input type="color" id="band-color-${newRingIndex}" value="#FFFFFF" onchange="updateRingSettings(${newRingIndex})"><br>
+        </div>
+    `;
+
+    controlsContainer.insertBefore(newRingControl, document.getElementById('add-ring-button'));
+    document.getElementById(`text-input-${newRingIndex}`).value = ringSettings[newRingIndex].text;
 }
