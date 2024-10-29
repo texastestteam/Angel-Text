@@ -9,14 +9,26 @@
         .control, .ring-control { margin-bottom: 10px; }
         .ring-toggle { cursor: pointer; margin-bottom: 5px; }
         .toggle-content { display: none; }
+        .delete-button { color: red; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
+  
+  
     <div class="controls-container" id="controls-container">
         <!-- Initial Ring Control Panel -->
+              <!-- Ring Spacing Control -->
+        <label for="ring-spacing">Ring Spacing:</label>
+        <input type="range" id="ring-spacing" min="10" max="100" value="30" onchange="updateRingSpacing()">
+        <br><br>
+
+        <!-- Background Color Control -->
+        <label for="background-color">Background Color:</label>
+        <input type="color" id="background-color" value="#000000" onchange="updateBackgroundColor()">
+        <br><br>
         <div class="ring-control" id="ring-0-controls">
             <div class="ring-toggle" onclick="toggleRingControls(0)">
-                Ring One +
+                Ring 1 +
             </div>
             <div class="toggle-content" id="ring-0-content">
                 <label for="text-input-0">Text Input for Ring 1:</label>
@@ -39,29 +51,17 @@
 
                 <label for="band-color-0">Band Color:</label>
                 <input type="color" id="band-color-0" value="#FFFFFF" onchange="updateRingSettings(0)"><br>
+
+                <div class="delete-button" onclick="deleteRing(0)">Delete Ring</div>
             </div>
         </div>
 
         <!-- Add New Ring Button -->
         <button id="add-ring-button" onclick="addNewRing()">Add New Ring</button>
         <br><br>
-
-        <!-- Ring Spacing Control -->
-        <label for="ring-spacing">Ring Spacing:</label>
-        <input type="range" id="ring-spacing" min="10" max="100" value="30" onchange="updateRingSpacing()">
-        <br><br>
-
-        <!-- Background Color Control -->
-        <label for="background-color">Background Color:</label>
-        <input type="color" id="background-color" value="#000000" onchange="updateBackgroundColor()">
-        <br><br>
-
-        <!-- X-Axis Angle Control Slider -->
-<label for="x-angle-control">X-Axis Rotation (Tilt Up/Down):</label>
-<input type="range" id="x-angle-control" min="0" max="360" value="0" onchange="updateRingRotation()">
-<br><br>
-
     </div>
+  
+  
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <script src="sketch.js"></script>
