@@ -4,7 +4,7 @@ let selectedFont;
 let xAngle = 0;
 let ringSettings = [];
 let ringSpacing = 30;
-let lastMouseY;  // Tracks the last Y position to detect movement
+let lastMouseY;
 
 const greetings = [
     "hi", "hola", "bonjour", "hallo", "ciao", "こんにちは", "안녕하세요", "你好", "привет", "olá",
@@ -18,6 +18,11 @@ function setup() {
     ringSettings[0] = createNewRingSettings();
 
     document.getElementById("text-input-0").value = ringSettings[0].text;
+    
+    // Initialize random background color
+    backgroundColor = color(random(255), random(255), random(255));
+    document.getElementById("background-color").value = "#" + hex(backgroundColor.levels[0], 2) 
+        + hex(backgroundColor.levels[1], 2) + hex(backgroundColor.levels[2], 2);
 
     // Initialize mouse tracking for click-and-drag rotation
     canvas.addEventListener("mousedown", () => {
@@ -31,7 +36,7 @@ function setup() {
 }
 
 function draw() {
-    background(220);
+    background(backgroundColor);
     textFont(selectedFont);
 
     // Adjust rotation based on mouse movement during click-and-drag
@@ -191,5 +196,6 @@ function updateRingSpacing() {
 }
 
 function updateBackgroundColor() {
+    // Convert color picker value to p5 color format
     backgroundColor = color(document.getElementById("background-color").value);
 }
