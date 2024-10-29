@@ -3,6 +3,7 @@ let fontColor, bandColor, backgroundColor;
 let selectedFont;
 let xAngle = 0;  // Rotation angle around the X-axis
 let mouseStartY; // Starting mouse Y position when clicked
+let lastMouseY;  // Tracks the last Y position to detect movement
 
 let fonts = {};
 let ringSettings = [];
@@ -52,6 +53,7 @@ function setup() {
     // Capture the initial mouse Y position on mouse press
     canvas.addEventListener("mousedown", () => {
         mouseStartY = mouseY;
+        lastMouseY = mouseY; // Set initial last Y position
     });
 }
 
@@ -62,14 +64,15 @@ function draw() {
     // Retrieve the X-axis angle from the slider
     xAngle = parseInt(document.getElementById("x-angle-control").value);
 
-    // Adjust the slider value based on mouse movement direction
+    // Adjust the slider value only when there’s a noticeable change in mouse movement
     if (mouseIsPressed) {
-        if (mouseY < mouseStartY) {  // Mouse moved up
+        if (mouseY < lastMouseY) {  // Mouse moved up
             xAngle = (xAngle + 1) % 360;  // Increase angle smoothly, wrap around at 360
-        } else if (mouseY > mouseStartY) {  // Mouse moved down
+        } else if (mouseY > lastMouseY) {  // Mouse moved down
             xAngle = (xAngle - 1 + 360) % 360;  // Decrease angle, wrap around at 0
         }
         document.getElementById("x-angle-control").value = xAngle;
+        lastMouseY = mouseY;  // Update the last known Y position
     }
 
     // Apply a single X-axis rotation to all rings together
