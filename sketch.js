@@ -2,6 +2,7 @@ let fontSize, circleSize, speed, kerning;
 let fontColor, bandColor, backgroundColor;
 let selectedFont;
 let xAngle = 0;  // Rotation angle around the X-axis
+let mouseStartY; // Starting mouse Y position when clicked
 
 let fonts = {};
 let ringSettings = [];
@@ -48,10 +49,9 @@ function setup() {
     // Initialize the X-axis rotation angle
     xAngle = parseInt(document.getElementById("x-angle-control").value);
 
-    // Event listener to change X-axis angle randomly on click
-    canvas.addEventListener("click", () => {
-        xAngle = random(360);
-        document.getElementById("x-angle-control").value = xAngle;
+    // Capture the initial mouse Y position on mouse press
+    canvas.addEventListener("mousedown", () => {
+        mouseStartY = mouseY;
     });
 }
 
@@ -62,9 +62,19 @@ function draw() {
     // Retrieve the X-axis angle from the slider
     xAngle = parseInt(document.getElementById("x-angle-control").value);
 
+    // Adjust the slider value based on mouse movement direction
+    if (mouseIsPressed) {
+        if (mouseY < mouseStartY) {  // Mouse moved up
+            xAngle = (xAngle + 1) % 360;  // Increase angle smoothly, wrap around at 360
+        } else if (mouseY > mouseStartY) {  // Mouse moved down
+            xAngle = (xAngle - 1 + 360) % 360;  // Decrease angle, wrap around at 0
+        }
+        document.getElementById("x-angle-control").value = xAngle;
+    }
+
     // Apply a single X-axis rotation to all rings together
     push();
-    rotateX(radians(xAngle));  // Apply the full 360-degree control
+    rotateX(radians(xAngle));
     ringSettings.forEach((ring, index) => {
         push();
         translate(0, index * ringSpacing - (ringSettings.length * ringSpacing) / 2, 0);
