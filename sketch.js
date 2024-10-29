@@ -1,7 +1,7 @@
 let fontSize, circleSize, speed, kerning;
 let fontColor, bandColor, backgroundColor;
 let selectedFont;
-let angle = 0;
+let xAngle = 0;  // Rotation angle around the X-axis
 
 let fonts = {};
 let ringSettings = [];
@@ -44,19 +44,34 @@ function setup() {
     // Set a random background color
     backgroundColor = color(random(255), random(255), random(255));
     document.getElementById("background-color").value = backgroundColor.toString('#rrggbb');
+
+    // Initialize the X-axis rotation angle
+    xAngle = parseInt(document.getElementById("x-angle-control").value);
+
+    // Event listener to change X-axis angle randomly on click
+    canvas.addEventListener("click", () => {
+        xAngle = random(360);
+        document.getElementById("x-angle-control").value = xAngle;
+    });
 }
 
 function draw() {
     background(backgroundColor);
     textFont(selectedFont);
 
-    // Draw each ring with spacing applied
+    // Retrieve the X-axis angle from the slider
+    xAngle = parseInt(document.getElementById("x-angle-control").value);
+
+    // Apply a single X-axis rotation to all rings together
+    push();
+    rotateX(radians(xAngle));  // Apply the full 360-degree control
     ringSettings.forEach((ring, index) => {
         push();
-        translate(0, index * ringSpacing - (ringSettings.length * ringSpacing) / 2, 0);  // Adjust for spacing
+        translate(0, index * ringSpacing - (ringSettings.length * ringSpacing) / 2, 0);
         drawRing(ring);
         pop();
     });
+    pop();
 }
 
 function drawRing(ring) {
@@ -129,6 +144,11 @@ function updateRingSpacing() {
 
 function updateBackgroundColor() {
     backgroundColor = color(document.getElementById("background-color").value);
+}
+
+// Update the global xAngle based on the slider's value
+function updateRingRotation() {
+    xAngle = parseInt(document.getElementById("x-angle-control").value);
 }
 
 function toggleRingControls(index) {
